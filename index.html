@@ -1,89 +1,266 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZM CRM</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body{
-      margin:0;
-      font-family:Arial;
-      background:#0f172a;
-      color:white;
-    }
+<title>ZM CRM</title>
 
-    header{
-      background:#1e293b;
-      padding:20px;
-      text-align:center;
-      font-size:28px;
-      font-weight:bold;
-      color:#3b82f6;
-    }
+<style>
 
-    .container{
-      padding:20px;
-    }
+body{
+    margin:0;
+    font-family:Arial;
+    background:#0f172a;
+    color:white;
+}
 
-    .cards{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-      gap:20px;
-    }
+header{
+    background:#1e293b;
+    padding:20px;
+    text-align:center;
+    font-size:32px;
+    font-weight:bold;
+    color:#3b82f6;
+}
 
-    .card{
-      background:#1e293b;
-      padding:20px;
-      border-radius:12px;
-    }
+.container{
+    padding:20px;
+}
 
-    .title{
-      font-size:18px;
-      margin-bottom:10px;
-    }
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+}
 
-    .value{
-      font-size:32px;
-      color:#22c55e;
-      font-weight:bold;
-    }
-  </style>
+.card{
+    background:#1e293b;
+    padding:20px;
+    border-radius:14px;
+    box-shadow:0 0 10px rgba(0,0,0,0.3);
+}
+
+.title{
+    font-size:16px;
+    margin-bottom:10px;
+    color:#cbd5e1;
+}
+
+.value{
+    font-size:30px;
+    font-weight:bold;
+    color:#22c55e;
+}
+
+.section{
+    margin-top:40px;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border:none;
+    border-radius:8px;
+    background:#334155;
+    color:white;
+}
+
+button{
+    margin-top:15px;
+    padding:12px 20px;
+    border:none;
+    border-radius:8px;
+    background:#3b82f6;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+table{
+    width:100%;
+    margin-top:20px;
+    border-collapse:collapse;
+}
+
+th, td{
+    padding:12px;
+    text-align:left;
+    border-bottom:1px solid #334155;
+}
+
+th{
+    color:#3b82f6;
+}
+
+</style>
 </head>
 
 <body>
 
 <header>
-  ZM CRM
+ZM CRM
 </header>
 
 <div class="container">
 
-  <div class="cards">
+<div class="cards">
 
-    <div class="card">
-      <div class="title">Meta Diária</div>
-      <div class="value">R$ 0,00</div>
-    </div>
+<div class="card">
+<div class="title">Meta Diária</div>
+<div class="value" id="metaDia">R$ 0</div>
+</div>
 
-    <div class="card">
-      <div class="title">Meta Semanal</div>
-      <div class="value">R$ 0,00</div>
-    </div>
+<div class="card">
+<div class="title">Meta Semanal</div>
+<div class="value" id="metaSemana">R$ 0</div>
+</div>
 
-    <div class="card">
-      <div class="title">Meta Mensal</div>
-      <div class="value">R$ 0,00</div>
-    </div>
+<div class="card">
+<div class="title">Meta Mensal</div>
+<div class="value" id="metaMes">R$ 0</div>
+</div>
 
-    <div class="card">
-      <div class="title">120% da Meta</div>
-      <div class="value">0%</div>
-    </div>
+<div class="card">
+<div class="title">120% da Meta</div>
+<div class="value" id="meta120">0%</div>
+</div>
 
-  </div>
+<div class="card">
+<div class="title">Ticket Médio</div>
+<div class="value" id="ticket">R$ 0</div>
+</div>
+
+<div class="card">
+<div class="title">Itens por Venda</div>
+<div class="value" id="itens">0</div>
+</div>
 
 </div>
+
+<div class="section">
+
+<h2>Cadastrar Venda</h2>
+
+<input type="number" id="valorVenda" placeholder="Valor da venda">
+
+<input type="number" id="quantidadeItens" placeholder="Quantidade de itens">
+
+<button onclick="adicionarVenda()">
+Adicionar Venda
+</button>
+
+</div>
+
+<div class="section">
+
+<h2>Ranking de Vendas</h2>
+
+<table>
+
+<thead>
+<tr>
+<th>Venda</th>
+<th>Valor</th>
+<th>Itens</th>
+</tr>
+</thead>
+
+<tbody id="tabelaVendas">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+let vendas = []
+
+function adicionarVenda(){
+
+    const valor = Number(document.getElementById('valorVenda').value)
+
+    const itens = Number(document.getElementById('quantidadeItens').value)
+
+    if(!valor || !itens){
+        alert('Preencha os campos')
+        return
+    }
+
+    vendas.push({
+        valor,
+        itens
+    })
+
+    atualizarSistema()
+
+    document.getElementById('valorVenda').value = ''
+    document.getElementById('quantidadeItens').value = ''
+
+}
+
+function atualizarSistema(){
+
+    let total = 0
+    let totalItens = 0
+
+    vendas.forEach(venda => {
+        total += venda.valor
+        totalItens += venda.itens
+    })
+
+    const ticket = total / vendas.length || 0
+
+    const mediaItens = totalItens / vendas.length || 0
+
+    document.getElementById('metaDia').innerHTML =
+        'R$ ' + total.toFixed(2)
+
+    document.getElementById('metaSemana').innerHTML =
+        'R$ ' + (total * 3).toFixed(2)
+
+    document.getElementById('metaMes').innerHTML =
+        'R$ ' + (total * 12).toFixed(2)
+
+    document.getElementById('meta120').innerHTML =
+        ((total / 5000) * 100).toFixed(1) + '%'
+
+    document.getElementById('ticket').innerHTML =
+        'R$ ' + ticket.toFixed(2)
+
+    document.getElementById('itens').innerHTML =
+        mediaItens.toFixed(1)
+
+    atualizarTabela()
+
+}
+
+function atualizarTabela(){
+
+    const tabela =
+        document.getElementById('tabelaVendas')
+
+    tabela.innerHTML = ''
+
+    vendas.forEach((venda, index) => {
+
+        tabela.innerHTML += `
+            <tr>
+                <td>#${index + 1}</td>
+                <td>R$ ${venda.valor.toFixed(2)}</td>
+                <td>${venda.itens}</td>
+            </tr>
+        `
+    })
+
+}
+
+</script>
 
 </body>
 </html>
