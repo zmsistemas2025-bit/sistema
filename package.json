@@ -1,7 +1,6 @@
 {
   "name": "zm-vendas",
   "version": "1.0.0",
-  "description": "CRM ZM Vendas",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
